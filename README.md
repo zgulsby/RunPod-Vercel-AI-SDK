@@ -16,7 +16,29 @@ A Next.js chat interface that connects to RunPod's AI endpoints. This project us
 - A RunPod account with an active endpoint
 - Your RunPod API key
 
-## Setup
+## RunPod Setup
+
+1. Create a RunPod account at [RunPod.io](https://www.runpod.io)
+2. Get your API key:
+   - Go to your [RunPod Dashboard](https://www.runpod.io/console/serverless)
+   - Click on "API Keys" in the sidebar
+   - Create a new API key
+   - Copy the API key (you'll only see it once!)
+
+3. Create a Serverless Endpoint:
+   - Go to the [Serverless](https://www.runpod.io/console/serverless) section
+   - Click "New Endpoint"
+   - Choose your preferred model (e.g., Llama 2, Mistral, etc.)
+   - Configure your endpoint settings:
+     - Name: Choose a descriptive name
+     - GPU: Select based on your needs
+     - Idle Timeout: Set based on your usage patterns
+     - Max Workers: Adjust based on expected concurrent users
+   - Click "Create Endpoint"
+   - Wait for the endpoint to be ready (status should be "ONLINE")
+   - Copy your endpoint ID
+
+## Local Development Setup
 
 1. Clone the repository:
 ```bash
@@ -42,21 +64,48 @@ npm run dev
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Deployment
+## Deployment to Vercel
 
-This project is optimized for deployment on Vercel:
+1. Push your code to GitHub:
+```bash
+git add .
+git commit -m "Initial commit"
+git push origin main
+```
 
-1. Push your code to GitHub
-2. Import your repository in Vercel
-3. Add your environment variables in the Vercel project settings:
-   - `RUNPOD_API_KEY`
-   - `RUNPOD_ENDPOINT_ID`
-4. Deploy!
+2. Deploy on Vercel:
+   - Go to [Vercel](https://vercel.com)
+   - Sign up/Login with your GitHub account
+   - Click "New Project"
+   - Import your GitHub repository
+   - Add your environment variables in the Vercel project settings:
+     - `RUNPOD_API_KEY`: Your RunPod API key
+     - `RUNPOD_ENDPOINT_ID`: Your RunPod endpoint ID
+   - Click "Deploy"
 
-## Environment Variables
+## Cost Management
 
-- `RUNPOD_API_KEY`: Your RunPod API key
-- `RUNPOD_ENDPOINT_ID`: Your RunPod endpoint ID
+- Monitor your RunPod usage in the [RunPod Dashboard](https://www.runpod.io/console/serverless)
+- Set up billing alerts in your RunPod account
+- Consider setting up a maximum budget in RunPod
+- The serverless endpoint charges only for active compute time
+
+## Troubleshooting
+
+1. If you get a 404 error:
+   - Verify your endpoint ID is correct
+   - Check if your endpoint is online in the RunPod dashboard
+   - Ensure your API key has the correct permissions
+
+2. If responses are slow:
+   - Check your endpoint's GPU configuration
+   - Monitor the RunPod dashboard for any throttling
+   - Consider upgrading your endpoint's resources
+
+3. If you get authentication errors:
+   - Verify your API key is correct
+   - Check if your API key is properly set in Vercel
+   - Ensure your API key hasn't expired
 
 ## Contributing
 

@@ -1,20 +1,14 @@
 import { StreamingTextResponse, Message } from 'ai';
 import axios from 'axios';
-
-// Replace with your RunPod API key
-const RUNPOD_API_KEY = process.env.RUNPOD_API_KEY;
-// Replace with your RunPod endpoint ID
-const RUNPOD_ENDPOINT_ID = process.env.RUNPOD_ENDPOINT_ID;
+import { RUNPOD_CONFIG, validateRunPodConfig } from '@/config/runpod';
 
 export async function POST(req: Request) {
   try {
     console.log('Received chat request');
-    console.log('Environment variables:', {
-      hasApiKey: !!RUNPOD_API_KEY,
-      apiKeyLength: RUNPOD_API_KEY?.length,
-      endpointId: RUNPOD_ENDPOINT_ID
-    });
-
+    
+    // Validate RunPod configuration
+    const { apiKey, endpointId } = validateRunPodConfig();
+    
     const { messages } = await req.json();
     console.log('Messages received:', messages);
 
@@ -25,21 +19,19 @@ export async function POST(req: Request) {
 
     console.log('Sending request to RunPod...');
     const runResponse = await axios.post(
-      `https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run`,
+      `https://api.runpod.ai/v2/${endpointId}/run`,
       {
         input: {
           prompt,
-          max_tokens: 1000,
-          temperature: 0.7,
-          top_p: 0.9,
-          stream: true
+          ...RUNPOD_CONFIG.model
         }
       },
       {
         headers: {
-          'Authorization': `Bearer ${RUNPOD_API_KEY}`,
+          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
+        timeout: RUNPOD_CONFIG.endpoint.timeout
       }
     );
 
@@ -53,7 +45,7 @@ export async function POST(req: Request) {
     const encoder = new TextEncoder();
 
     // Start polling for results in the background
-    pollRunPodJob(jobId, writer, encoder).catch(async (error) => {
+    pollRunPodJob(jobId, writer, encoder, apiKey, endpointId).catch(async (error) => {
       console.error('Error polling RunPod:', error);
       await writer.write(encoder.encode(`Error: ${error.message}`));
       await writer.close();
@@ -89,21 +81,23 @@ export async function POST(req: Request) {
 async function pollRunPodJob(
   jobId: string,
   writer: WritableStreamDefaultWriter,
-  encoder: TextEncoder
+  encoder: TextEncoder,
+  apiKey: string,
+  endpointId: string
 ): Promise<void> {
-  const maxAttempts = 60;
   let attempts = 0;
   let lastStatus = '';
 
-  while (attempts < maxAttempts) {
+  while (attempts < RUNPOD_CONFIG.polling.max_attempts) {
     try {
       const response = await axios.get(
-        `https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${jobId}`,
+        `https://api.runpod.ai/v2/${endpointId}/status/${jobId}`,
         {
           headers: {
-            'Authorization': `Bearer ${RUNPOD_API_KEY}`,
+            'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
           },
+          timeout: RUNPOD_CONFIG.endpoint.timeout
         }
       );
 
@@ -147,8 +141,8 @@ async function pollRunPodJob(
           console.warn(`Unknown status: ${status}`);
       }
 
-      // Wait for 3 seconds before polling again
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Wait for configured interval before polling again
+      await new Promise(resolve => setTimeout(resolve, RUNPOD_CONFIG.polling.interval));
       attempts++;
     } catch (error: any) {
       console.error('Error checking job status:', {
@@ -166,5 +160,5 @@ async function pollRunPodJob(
     }
   }
 
-  throw new Error(`Timeout waiting for RunPod job after ${maxAttempts * 3} seconds. Last status: ${lastStatus}`);
+  throw new Error(`Timeout waiting for RunPod job after ${RUNPOD_CONFIG.polling.max_attempts * RUNPOD_CONFIG.polling.interval / 1000} seconds. Last status: ${lastStatus}`);
 } 
