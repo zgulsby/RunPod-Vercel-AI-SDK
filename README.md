@@ -42,8 +42,8 @@ A Next.js chat interface that connects to RunPod's AI endpoints. This project us
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/runpod-chat.git
-cd runpod-chat
+git clone https://github.com/zgulsby/RunPod-Vercel-AI-SDK.git
+cd RunPod-Vercel-AI-SDK
 ```
 
 2. Install dependencies:
