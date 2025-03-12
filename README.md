@@ -51,11 +51,16 @@ cd RunPod-Vercel-AI-SDK
 npm install
 ```
 
-3. Create a `.env.local` file in the root directory with your RunPod credentials:
-```env
-RUNPOD_API_KEY=your_api_key_here
-RUNPOD_ENDPOINT_ID=your_endpoint_id_here
-```
+3. Set up environment variables:
+   - Copy `.env.example` to `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+   - Edit `.env.local` with your RunPod credentials:
+   ```env
+   RUNPOD_API_KEY=your_api_key_here
+   RUNPOD_ENDPOINT_ID=your_endpoint_id_here
+   ```
 
 4. Start the development server:
 ```bash
