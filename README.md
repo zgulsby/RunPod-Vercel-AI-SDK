@@ -16,6 +16,23 @@ A Next.js chat interface that connects to RunPod's AI endpoints. This project us
 - A RunPod account with an active endpoint
 - Your RunPod API key
 
+## Dependencies
+
+### Core Dependencies
+- `next`: 14.1.0 - Next.js framework
+- `react`: ^18.2.0 - React library
+- `react-dom`: ^18.2.0 - React DOM rendering
+- `ai`: ^2.2.37 - Vercel AI SDK for streaming responses
+- `axios`: ^1.6.7 - HTTP client for API requests
+
+### Development Dependencies
+- `typescript`: ^5.3.3 - TypeScript support
+- `tailwindcss`: ^3.4.1 - CSS framework
+- `postcss`: ^8.4.35 - CSS processing
+- `autoprefixer`: ^10.4.17 - CSS vendor prefixing
+- `eslint`: ^8.56.0 - Code linting
+- `eslint-config-next`: 14.1.0 - Next.js ESLint configuration
+
 ## RunPod Setup
 
 1. Create a RunPod account at [RunPod.io](https://www.runpod.io)
